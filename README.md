@@ -6,6 +6,11 @@
 
 - [زبان English]
 ------------------------
+![R (a2)](https://github.com/Azumi67/6TO4-PrivateIP/assets/119934376/57a4c3f1-f637-4d4d-bec2-1de36206d136)**دسترسی سریع به اسکریپت**
+
+
+- [اسکریپت من](
+------------------------
 ![check](https://github.com/Azumi67/PrivateIP-Tunnel/assets/119934376/13de8d36-dcfe-498b-9d99-440049c0cf14)
 **امکانات**
  <div dir="rtl">&bull; ساخت تانل 6to4 بین چندین سرور [Anycast] & [PrivateIP]</div>
@@ -203,10 +208,11 @@ apt install curl -y && bash <(curl -s https://raw.githubusercontent.com/opiran-c
 -----------------------------------------------------
 ![R (a2)](https://github.com/Azumi67/PrivateIP-Tunnel/assets/119934376/716fd45e-635c-4796-b8cf-856024e5b2b2)
 **اسکریپت من**
+----------------
 
 
 ```
-
+apt install curl -y && bash <(curl -Ls https://raw.githubusercontent.com/Azumi67/6TO4-PrivateIP/main/6to4.sh --ipv4)
 ```
 
 
