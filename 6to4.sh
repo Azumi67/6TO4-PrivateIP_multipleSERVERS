@@ -204,7 +204,10 @@ function kharej_single_menu() {
       echo $'\e[92m(\e[91mO,O\e[92m)\e[0m'
       echo $'\e[92m(   ) \e[93mConfiguring kharej server\e[0m'
       echo $'\e[92m "-"\e[93m══════════════════════════\e[0m'
-      echo ""
+       display_logoo
+      printf "\e[93m╭────────────────────────────────────────────────────────────────────────────────────╮\e[0m\n"
+        echo $'\e[92m   Please make sure to remove any private IPs that you have created before proceeding\e[0m'
+      printf "\e[93m╰────────────────────────────────────────────────────────────────────────────────────╯\e[0m\n"
 	  display_notification $'\e[93mAdding private IP addresses for Kharej server...\e[0m'
     if [ -f "/etc/private.sh" ]; then
         rm /etc/private.sh
@@ -332,7 +335,10 @@ function iran_single_menu() {
       echo $'\e[92m(\e[91mO,O\e[92m)\e[0m'
       echo $'\e[92m(   ) \e[93mConfiguring Iran server\e[0m'
       echo $'\e[92m "-"\e[93m══════════════════════════\e[0m'
-      ech0 ""
+       display_logoo
+      printf "\e[93m╭────────────────────────────────────────────────────────────────────────────────────╮\e[0m\n"
+        echo $'\e[92m   Please make sure to remove any private IPs that you have created before proceeding\e[0m'
+      printf "\e[93m╰────────────────────────────────────────────────────────────────────────────────────╯\e[0m\n"
     	  display_notification $'\e[93mAdding private IP addresses for Iran server...\e[0m'
     if [ -f "/etc/private.sh" ]; then
         rm /etc/private.sh
