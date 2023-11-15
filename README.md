@@ -1,5 +1,5 @@
 ![R (2)](https://github.com/Azumi67/PrivateIP-Tunnel/assets/119934376/a064577c-9302-4f43-b3bf-3d4f84245a6f)
-نام پروژه : تانل 6to4 - پرایوت ایپی
+نام پروژه : تانل 6to4 - پرایوت ایپی (امکان تانل بین 5 سرور خارج و 1 ایران و برعکس)
 ---------------------------------------------------------------
 ![lang](https://github.com/Azumi67/PrivateIP-Tunnel/assets/119934376/627ecb66-0445-4c15-b2a0-59e02c7f7e09)
 **زبان - Languages**
@@ -11,7 +11,7 @@
 
 - [کلیک - click](https://github.com/Azumi67/6TO4-PrivateIP/blob/main/README.md#%D8%A7%D8%B3%DA%A9%D8%B1%DB%8C%D9%BE%D8%AA-%D9%85%D9%86)
 ------------------------
-![Update-Note--Arvin61r58](https://github.com/Azumi67/6TO4-PrivateIP/assets/119934376/abc423fc-f055-42e2-a60f-7b91e468fd04)  **امکان تانل بین 5 سرور ایران و 1 سرور خارج و برعکس**
+![Update-Note--Arvin61r58](https://github.com/Azumi67/6TO4-PrivateIP/assets/119934376/abc423fc-f055-42e2-a60f-7b91e468fd04)  **امکان تانل بین 5 سرور خارج و 1 سرور ایران و برعکس**
 - مانند قبل سرور های خارج خودتان را اول کانفیگ کنید و بعد سرور ایران
   - امکان تانل بین 5 سرور خارج و یک سرور ایران و برعکس
   - از این پرایوت ایپی ها برای لود بالانس که به زودی قرار میدم هم میتوان استفاده کرد
@@ -21,11 +21,12 @@
 ![check](https://github.com/Azumi67/PrivateIP-Tunnel/assets/119934376/13de8d36-dcfe-498b-9d99-440049c0cf14)
 **امکانات**
  <div dir="rtl">&bull; ساخت تانل 6to4 بین چندین سرور [Anycast] & [PrivateIP]</div>
- <div dir="rtl">&bull; تانل بین 5 سرور ایران و 1 خارج و برعکس</div>
+ <div dir="rtl">&bull; تانل بین 5 سرور خارج و 1 سرور ایران و برعکس</div>
  <div dir="rtl">&bull; امکان استفاده از ایپی در سرور های دیگر (توصیه نمیشود) [Anycast]</div>
  <div dir="rtl">&bull; استفاده از cronjob به جای service</div>
  <div dir="rtl">&bull; امکان  حذف کردن تانل ها</div>
  <div dir="rtl">&bull; پس از این تانل، میتوانید از ایپی های ساخته شده برای تانل اصلی یا پورت فوروارد استفاده نمایید</div>
+  <div dir="rtl">&bull; امکان استفاده در لود بالانس FRP</div>
  <div dir="rtl">&bull;امکان ساخت چندین پرایوت ایپی برای سرور های شما</div>
  
  ------------------------------------------------------
