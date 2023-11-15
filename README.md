@@ -11,10 +11,17 @@
 
 - [کلیک - click](https://github.com/Azumi67/6TO4-PrivateIP/blob/main/README.md#%D8%A7%D8%B3%DA%A9%D8%B1%DB%8C%D9%BE%D8%AA-%D9%85%D9%86)
 ------------------------
+![Update-Note--Arvin61r58](https://github.com/Azumi67/6TO4-PrivateIP/assets/119934376/abc423fc-f055-42e2-a60f-7b91e468fd04)  **امکان تانل بین 5 سرور ایران و 1 سرور خارج و برعکس**
+- مانند قبل سرور های خارج خودتان را اول کانفیگ کنید و بعد سرور ایران
+  - امکان تانل بین 5 سرور خارج و یک سرور ایران و برعکس
+  - از این پرایوت ایپی ها برای لود بالانس که به زودی قرار میدم هم میتوان استفاده کرد
+ 
+ ---------------------------------
+
 ![check](https://github.com/Azumi67/PrivateIP-Tunnel/assets/119934376/13de8d36-dcfe-498b-9d99-440049c0cf14)
 **امکانات**
  <div dir="rtl">&bull; ساخت تانل 6to4 بین چندین سرور [Anycast] & [PrivateIP]</div>
- <div dir="rtl">&bull; تانل بین 3 سرور ایران و 1 خارج و برعکس</div>
+ <div dir="rtl">&bull; تانل بین 5 سرور ایران و 1 خارج و برعکس</div>
  <div dir="rtl">&bull; امکان استفاده از ایپی در سرور های دیگر (توصیه نمیشود) [Anycast]</div>
  <div dir="rtl">&bull; استفاده از cronjob به جای service</div>
  <div dir="rtl">&bull; امکان  حذف کردن تانل ها</div>
