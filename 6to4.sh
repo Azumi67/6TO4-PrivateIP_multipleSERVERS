@@ -127,8 +127,8 @@ function main_menu() {
         echo -e   "\e[91m      🌐 \e[92mJoin Opiran Telegram \e[34m@https://t.me/OPIranClub\e[0m \e[91m🌐\e[0m"
         echo -e "\e[93m╠════════════════════════════════════════════════════════════════╣\e[0m"  
 		echo -e "1. \e[93mPrivate IP - [Signle Server]\e[0m"
-        echo -e "2. \e[96mPrivate IP - [3]Kharej | [1]IRAN\e[0m"
-		echo -e "3. \e[92mPrivate IP - [1]Kharej | [3]IRAN\e[0m"
+        echo -e "2. \e[96mPrivate IP - [5]Kharej | [1]IRAN\e[0m"
+		echo -e "3. \e[92mPrivate IP - [1]Kharej | [5]IRAN\e[0m"
         echo -e "4. \e[94m6to4\e[0m"
         echo -e "5. \e[93m6to4 [Anycast]\e[0m"
         echo -e "6. \e[91mUninstall\e[0m"
@@ -476,9 +476,11 @@ function private_ip_3() {
   echo $'\e[93mChoose what to do:\e[0m'
   echo $'1. \e[92mKharej server 1\e[0m'
   echo $'2. \e[93mKharej server 2\e[0m'
-  echo $'3. \e[92mKharej server 3\e[0m'
-  echo $'4. \e[93mIRAN Server[3 kharej servers - 1 iran]\e[0m'
-  echo $'5. \e[94mback to main menu\e[0m'
+  echo $'3. \e[96mKharej server 3\e[0m'
+  echo $'4. \e[92mKharej server 4\e[0m'
+  echo $'5. \e[93mKharej server 5\e[0m'
+  echo $'6. \e[96mIRAN Server[5 kharej servers - 1 iran]\e[0m'
+  echo $'7. \e[94mback to main menu\e[0m'
   printf "\e[93m╰───────────────────────────────────────╯\e[0m\n"
   read -e -p $'\e[38;5;205mEnter your choice Please: \e[0m' server_type
 case $server_type in
@@ -492,9 +494,15 @@ case $server_type in
         kharej3_private_menu
         ;;
     4)
-        iran_private_menu
+        kharej4_private_menu
         ;;
     5)
+        kharej5_private_menu
+        ;;
+    6)
+        iran_private_menu
+        ;;
+    7)
         clear
         main_menu
         ;;
@@ -511,7 +519,7 @@ function kharej_private_menu() {
       echo $'\e[92m "-"\e[93m══════════════════════════\e[0m'
 	  display_logoo
      echo -e "\e[93m.------------------------------------------------------------------------------------------------------------------------------------.\e[0m"
-     echo -e "\e[93m| \e[92mIf you have 3 different kharej servers, make a note and assing an ipv4 address for every server. eg : server 1 : kharej[1] ipv4      \e[0m"
+     echo -e "\e[93m| \e[92mIf you have 5 different kharej servers, make a note and assing an ipv4 address for every server. eg : server 1 : kharej[1] ipv4      \e[0m"
      echo -e "\e[93m|\e[0m Since we have one iran server, it will be the same ipv4 for every kharej servers.                                                        \e[0m"
      echo -e "\e[93m|\e[93m You can enter the number of additional private IPs you may need.                              \e[0m"
      echo -e "\e[93m'------------------------------------------------------------------------------------------------------------------------------------'\e[0m"
@@ -880,6 +888,253 @@ do
 done
 echo "+---------------------------+"
 }
+#kharej4
+function kharej4_private_menu() {
+     clear
+	  echo $'\e[92m ^ ^\e[0m'
+      echo $'\e[92m(\e[91mO,O\e[92m)\e[0m'
+      echo $'\e[92m(   ) \e[93mConfiguring kharej server 4\e[0m'
+      echo $'\e[92m "-"\e[93m══════════════════════════\e[0m'
+      echo ""
+    display_notification $'\e[93mAdding private IP addresses for Kharej server 4...\e[0m'
+    if [ -f "/etc/private.sh" ]; then
+        rm /etc/private.sh
+    fi
+
+# Q&A
+printf "\e[93m╭─────────────────────────────────────────────────────────╮\e[0m\n"
+read -e -p $'\e[93mEnter \e[92mKharej[4]\e[93m IPV4 address: \e[0m' local_ip
+read -e -p $'\e[93mEnter \e[92mIRAN\e[93m IPV4 address \e[92m[iran ipv4 address is the same for every kharej server]: \e[0m' remote_ip
+
+
+# ip commands
+ip tunnel add azumi4 mode sit remote $remote_ip local $local_ip ttl 255 > /dev/null
+ip link set dev azumi4 mtu 1480 > /dev/null
+ip link set dev azumi4 up > /dev/null
+ 
+# iran initial IP address
+initial_ip="fd1d:fc98:b73e:b581::2/64"
+ip addr add $initial_ip dev azumi4 > /dev/null
+
+# additional private IPs-number
+read -e -p $'How many additional \e[92mprivate IPs\e[93m do you need? \e[0m' num_ips
+printf "\e[93m╰─────────────────────────────────────────────────────────╯\e[0m\n"
+# additional private IPs
+for ((i=1; i<=num_ips; i++))
+do
+  ip_suffix=`printf "%x\n" $i`
+  ip_addr="fd1d:fc98:b73e:b58${ip_suffix}::2/64"  > /dev/null
+  
+  # Check kharej
+  ip addr show dev azumi4 | grep -q "$ip_addr"
+  if [ $? -eq 0 ]; then
+    echo "IP address $ip_addr already exists. Skipping..."
+  else
+    ip addr add $ip_addr dev azumi4
+  fi
+done
+
+   # private.sh
+ display_notification $'\e[93mAdding commands to private.sh...\e[0m'
+echo "ip tunnel add azumi4 mode sit remote $remote_ip local $local_ip ttl 255" >> /etc/private.sh
+echo "ip link set dev azumi4 mtu 1480" >> /etc/private.sh
+echo "ip link set dev azumi4 up" >> /etc/private.sh
+echo "ip addr add fd1d:fc98:b73e:b581::2/64 dev azumi4" >> /etc/private.sh
+ip_addr="fd1d:fc98:b73e:b58${ip_suffix}::2/64"
+echo "ip addr add $ip_addr dev azumi4" >> /etc/private.sh
+
+display_notification $'\e[93mAdding cron job for server 4!\e[0m'
+    (crontab -l 2>/dev/null; echo "@reboot /bin/bash /etc/private.sh") | crontab -
+	ping -c 2 fd1d:fc98:b73e:b581::1 | sed "s/.*/\x1b[94m&\x1b[0m/" 
+	sleep 1
+    # script
+script_content='#!/bin/bash
+
+# ipv6 address
+ip_address="fd1d:fc98:b73e:b581::1"
+
+
+max_pings=3
+
+# interval
+interval=30
+
+
+while true
+do
+    # loop
+    for ((i = 1; i <= max_pings; i++))
+    do
+        ping_result=$(ping -c 1 $ip_address | grep "time=" | awk -F "time=" "{print $2}" | awk -F " " "{print $1}" | cut -d "." -f1)
+        if [ -n "$ping_result" ]; then
+            echo "Ping successful! Response time: $ping_result ms"
+        else
+            echo "Ping failed!"
+        fi
+    done
+
+    echo "Waiting for $interval seconds..."
+    sleep $interval
+done'
+
+echo "$script_content" | sudo tee /etc/ping_v6.sh > /dev/null
+
+    chmod +x /etc/ping_v6.sh
+# service file
+    cat <<EOF > /etc/systemd/system/ping_v6.service
+[Unit]
+Description=keepalive
+After=network.target
+
+[Service]
+ExecStart=/bin/bash /etc/ping_v6.sh
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF
+    
+    systemctl daemon-reload
+    systemctl enable ping_v6.service
+    systemctl start ping_v6.service
+    display_checkmark $'\e[92mPing Service has been added successfully!\e[0m'	
+	
+# display 
+echo ""
+echo -e "Created \e[93mPrivate IP Addresses \e[92m(Kharej):\e[0m"
+for ((i=1; i<=num_ips; i++))
+do
+    ip_suffix=`printf "%x\n" $i`
+    ip_addr="fd1d:fc98:b73e:b58${ip_suffix}::2"
+    echo "+---------------------------+"
+    echo -e "| \e[92m$ip_addr    \e[0m|"
+done
+echo "+---------------------------+"
+}
+
+#kharej5
+function kharej5_private_menu() {
+     clear
+	  echo $'\e[92m ^ ^\e[0m'
+      echo $'\e[92m(\e[91mO,O\e[92m)\e[0m'
+      echo $'\e[92m(   ) \e[93mConfiguring kharej server 5\e[0m'
+      echo $'\e[92m "-"\e[93m══════════════════════════\e[0m'
+      echo ""
+    display_notification $'\e[93mAdding private IP addresses for Kharej server 5...\e[0m'
+    if [ -f "/etc/private.sh" ]; then
+        rm /etc/private.sh
+    fi
+
+# Q&A
+printf "\e[93m╭─────────────────────────────────────────────────────────╮\e[0m\n"
+read -e -p $'\e[93mEnter \e[92mKharej[5]\e[93m IPV4 address: \e[0m' local_ip
+read -e -p $'\e[93mEnter \e[92mIRAN\e[93m IPV4 address \e[92m[iran ipv4 address is the same for every kharej server]: \e[0m' remote_ip
+
+
+# ip commands
+ip tunnel add azumi5 mode sit remote $remote_ip local $local_ip ttl 255 > /dev/null
+ip link set dev azumi5 mtu 1480 > /dev/null
+ip link set dev azumi5 up > /dev/null
+ 
+# iran initial IP address
+initial_ip="fd1d:fc98:b73e:b681::2/64"
+ip addr add $initial_ip dev azumi5 > /dev/null
+
+# additional private IPs-number
+read -e -p $'How many additional \e[92mprivate IPs\e[93m do you need? \e[0m' num_ips
+printf "\e[93m╰─────────────────────────────────────────────────────────╯\e[0m\n"
+# additional private IPs
+for ((i=1; i<=num_ips; i++))
+do
+  ip_suffix=`printf "%x\n" $i`
+  ip_addr="fd1d:fc98:b73e:b68${ip_suffix}::2/64"  > /dev/null
+  
+  # Check kharej
+  ip addr show dev azumi5 | grep -q "$ip_addr"
+  if [ $? -eq 0 ]; then
+    echo "IP address $ip_addr already exists. Skipping..."
+  else
+    ip addr add $ip_addr dev azumi5
+  fi
+done
+
+   # private.sh
+ display_notification $'\e[93mAdding commands to private.sh...\e[0m'
+echo "ip tunnel add azumi5 mode sit remote $remote_ip local $local_ip ttl 255" >> /etc/private.sh
+echo "ip link set dev azumi5 mtu 1480" >> /etc/private.sh
+echo "ip link set dev azumi5 up" >> /etc/private.sh
+echo "ip addr add fd1d:fc98:b73e:b681::2/64 dev azumi5" >> /etc/private.sh
+ip_addr="fd1d:fc98:b73e:b68${ip_suffix}::2/64"
+echo "ip addr add $ip_addr dev azumi5" >> /etc/private.sh
+
+display_notification $'\e[93mAdding cron job for server 5!\e[0m'
+    (crontab -l 2>/dev/null; echo "@reboot /bin/bash /etc/private.sh") | crontab -
+	ping -c 2 fd1d:fc98:b73e:b681::1 | sed "s/.*/\x1b[94m&\x1b[0m/" 
+	sleep 1
+    # script
+script_content='#!/bin/bash
+
+# ipv6 address
+ip_address="fd1d:fc98:b73e:b681::1"
+
+
+max_pings=3
+
+# interval
+interval=35
+
+
+while true
+do
+    # loop
+    for ((i = 1; i <= max_pings; i++))
+    do
+        ping_result=$(ping -c 1 $ip_address | grep "time=" | awk -F "time=" "{print $2}" | awk -F " " "{print $1}" | cut -d "." -f1)
+        if [ -n "$ping_result" ]; then
+            echo "Ping successful! Response time: $ping_result ms"
+        else
+            echo "Ping failed!"
+        fi
+    done
+
+    echo "Waiting for $interval seconds..."
+    sleep $interval
+done'
+
+echo "$script_content" | sudo tee /etc/ping_v6.sh > /dev/null
+
+    chmod +x /etc/ping_v6.sh
+# service file
+    cat <<EOF > /etc/systemd/system/ping_v6.service
+[Unit]
+Description=keepalive
+After=network.target
+
+[Service]
+ExecStart=/bin/bash /etc/ping_v6.sh
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF
+    
+    systemctl daemon-reload
+    systemctl enable ping_v6.service
+    systemctl start ping_v6.service
+    display_checkmark $'\e[92mPing Service has been added successfully!\e[0m'	
+	
+# display 
+echo ""
+echo -e "Created \e[93mPrivate IP Addresses \e[92m(Kharej):\e[0m"
+for ((i=1; i<=num_ips; i++))
+do
+    ip_suffix=`printf "%x\n" $i`
+    ip_addr="fd1d:fc98:b73e:b68${ip_suffix}::2"
+    echo "+---------------------------+"
+    echo -e "| \e[92m$ip_addr    \e[0m|"
+done
+echo "+---------------------------+"
+}
 # private IP for Iran
 function iran_private_menu() {
     clear
@@ -908,6 +1163,14 @@ fi
 if [ -f "/etc/private_3.sh" ]; then
     rm /etc/private_3.sh
 fi
+
+if [ -f "/etc/private_4.sh" ]; then
+    rm /etc/private_4.sh
+fi
+
+if [ -f "/etc/private_5.sh" ]; then
+    rm /etc/private_5.sh
+fi
 # buffer space
 echo "net.core.rmem_max = 16777216" >> /etc/sysctl.conf > /dev/null
 echo "net.core.wmem_max = 16777216" >> /etc/sysctl.conf > /dev/null
@@ -923,7 +1186,7 @@ do
     echo ""
     echo -e "\e[93mConfiguring Kharej server $i...\e[0m"
 
-    # Set IP address based on server number
+    
     if [ $i -eq 1 ]; then
         device_name="azumi"
         initial_ip="fd1d:fc98:b73e:b481::1/64"
@@ -939,6 +1202,16 @@ do
         initial_ip="fd1d:fc98:b73e:b281::1/64"
         kharej_ip="fd1d:fc98:b73e:b281::2/64"
 		i_ip="fd1d:fc98:b73e:b28"
+    elif [ $i -eq 4 ]; then
+        device_name="azumi4"
+        initial_ip="fd1d:fc98:b73e:b581::1/64"
+        kharej_ip="fd1d:fc98:b73e:b581::2/64"
+		i_ip="fd1d:fc98:b73e:b58"
+    elif [ $i -eq 5 ]; then
+        device_name="azumi5"
+        initial_ip="fd1d:fc98:b73e:b681::1/64"
+        kharej_ip="fd1d:fc98:b73e:b681::2/64"
+		i_ip="fd1d:fc98:b73e:b68"
     else
         echo "Invalid server number. Skipping..."
         continue
@@ -995,7 +1268,7 @@ printf "\e[93m╰─────────────────────
 done
 
 # the number of servers
-num_servers=3
+num_servers=5
 
 # Function
 create_ping_files() {
@@ -1023,7 +1296,19 @@ create_ping_files() {
         initial_ip="fd1d:fc98:b73e:b281::1/64"
         kharej_ip="fd1d:fc98:b73e:b281::2"
         i_ip="fd1d:fc98:b73e:b28"
-		ping=60
+		ping=30
+    elif [ $server_number -eq 4 ]; then
+        device_name="azumi4"
+        initial_ip="fd1d:fc98:b73e:b581::1/64"
+        kharej_ip="fd1d:fc98:b73e:b581::2"
+        i_ip="fd1d:fc98:b73e:b58"
+		ping=32
+    elif [ $server_number -eq 5 ]; then
+        device_name="azumi5"
+        initial_ip="fd1d:fc98:b73e:b681::1/64"
+        kharej_ip="fd1d:fc98:b73e:b681::2"
+        i_ip="fd1d:fc98:b73e:b68"
+		ping=36
     else
         echo "Invalid server number. Skipping..."
         return
@@ -1097,9 +1382,9 @@ WantedBy=multi-user.target"
 # server numbers
      echo -e "\e[93m.---------------------------------------------------------------------------------------------------------.\e[0m"
      echo -e "\e[93m| \e[92mIf you have 2 servers , you should enter like this >> 1 2    - With a space between  every number                                           \e[0m"
-	  echo -e "\e[0m|\e[0m If you have 3 servers, you should enter it like this >> 1 2 3  - With a space between every number                \e[0m"
+	  echo -e "\e[0m|\e[0m If you have 5 servers, you should enter it like this >> 1 2 3 4 5  - With a space between every number                \e[0m"
      echo -e "\e[93m'---------------------------------------------------------------------------------------------------------'\e[0m"
-read -e -p $'\e[93mEnter the \e[92mserver numbers \e[93m(Choose the server numbers, separated by a space - e.g., 1 2 3): \e[0m' server_numbers
+read -e -p $'\e[93mEnter the \e[92mserver numbers \e[93m(Choose the server numbers, separated by a space - e.g., 1 2 3 4 5): \e[0m' server_numbers
 
 
 IFS=' ' read -ra server_array <<< "$server_numbers"
@@ -1126,7 +1411,7 @@ sudo systemctl start "ping_$server_number"
 display_checkmark $'\e[92mPing service and script files created successfully for server '"$server_number"$'.\e[0m'
 }
 
-#3iran-1Kharej
+#5iran-1Kharej
 function private_ip_1() {
     clear
     echo $'\e[92m ^ ^\e[0m'
@@ -1143,8 +1428,10 @@ function private_ip_1() {
   echo $'1. \e[92mIran server 1\e[0m'
   echo $'2. \e[93mIran server 2\e[0m'
   echo $'3. \e[92mIran server 3\e[0m'
-  echo $'4. \e[93mKharej Server[3 Iran server- 1 Kharej]\e[0m'
-  echo $'5. \e[94mback to main menu\e[0m'
+  echo $'4. \e[92mIran server 4\e[0m'
+  echo $'5. \e[92mIran server 5\e[0m'
+  echo $'6. \e[93mKharej Server[5 Iran servers- 1 Kharej]\e[0m'
+  echo $'7. \e[94mback to main menu\e[0m'
   printf "\e[93m╰───────────────────────────────────────╯\e[0m\n"
   read -e -p $'\e[38;5;205mEnter your choice Please: \e[0m' server_type
 case $server_type in
@@ -1158,9 +1445,15 @@ case $server_type in
         iran3_private_menu
         ;;
     4)
-        kharejj_private_menu
+        iran4_private_menu
         ;;
     5)
+        iran5_private_menu
+        ;;
+    6)
+        kharejj_private_menu
+        ;;
+    7)
         clear
         main_menu
         ;;
@@ -1297,7 +1590,7 @@ do
 done
 echo "+---------------------------+"
 }
-#kharej2
+#iran2
 function iran2_private_menu() {
      clear
 	  echo $'\e[92m ^ ^\e[0m'
@@ -1420,7 +1713,7 @@ do
 done
 echo "+---------------------------+"
 }
-#kharej3
+#iran3
 function iran3_private_menu() {
      clear
 	  echo $'\e[92m ^ ^\e[0m'
@@ -1542,6 +1835,252 @@ do
 done
 echo "+---------------------------+"
 }
+#iran4
+function iran4_private_menu() {
+     clear
+	  echo $'\e[92m ^ ^\e[0m'
+      echo $'\e[92m(\e[91mO,O\e[92m)\e[0m'
+      echo $'\e[92m(   ) \e[93mConfiguring Iran server 4\e[0m'
+      echo $'\e[92m "-"\e[93m══════════════════════════\e[0m'
+      echo ""
+    display_notification $'\e[93mAdding private IP addresses for iran server 4...\e[0m'
+    if [ -f "/etc/private.sh" ]; then
+        rm /etc/private.sh
+    fi
+
+# Q&A
+printf "\e[93m╭─────────────────────────────────────────────────────────╮\e[0m\n"
+read -e -p $'\e[93mEnter \e[92mIran[4]\e[93m IPV4 address: \e[0m' local_ip
+read -e -p $'\e[93mEnter \e[92mKharej\e[93m IPV4 address [Kharej ipv4 address is the same for every iran server]: \e[0m' remote_ip
+
+
+# ip commands
+ip tunnel add azumi4 mode sit remote $remote_ip local $local_ip ttl 255 > /dev/null
+
+ip link set dev azumi4 up > /dev/null
+ 
+# iran initial IP address
+initial_ip="fd1d:fc98:b73e:b581::2/64"
+ip addr add $initial_ip dev azumi4 > /dev/null
+
+# additional private IPs-number
+read -e -p $'How many additional \e[92mprivate IPs\e[93m do you need? \e[0m' num_ips
+printf "\e[93m╰─────────────────────────────────────────────────────────╯\e[0m\n"
+# additional private IPs
+for ((i=1; i<=num_ips; i++))
+do
+  ip_suffix=`printf "%x\n" $i`
+  ip_addr="fd1d:fc98:b73e:b58${ip_suffix}::2/64"  > /dev/null
+  
+  # Check kharej
+  ip addr show dev azumi4 | grep -q "$ip_addr"
+  if [ $? -eq 0 ]; then
+    echo "IP address $ip_addr already exists. Skipping..."
+  else
+    ip addr add $ip_addr dev azumi4
+  fi
+done
+
+   # private.sh
+echo -e "\e[93mAdding commands to private.sh...\e[0m"
+echo "ip tunnel add azumi4 mode sit remote $remote_ip local $local_ip ttl 255" >> /etc/private.sh
+echo "ip link set dev azumi4 up" >> /etc/private.sh
+echo "ip addr add fd1d:fc98:b73e:b581::2/64 dev azumi4" >> /etc/private.sh
+ip_addr="fd1d:fc98:b73e:b58${ip_suffix}::2/64"
+echo "ip addr add $ip_addr dev azumi4" >> /etc/private.sh
+
+display_notification $'\e[93mAdding cron job for server 4...\e[0m'
+    (crontab -l 2>/dev/null; echo "@reboot /bin/bash /etc/private.sh") | crontab -
+	sleep 1
+	ping -c 2 fd1d:fc98:b73e:b581::1 | sed "s/.*/\x1b[94m&\x1b[0m/" 
+    # script
+script_content='#!/bin/bash
+
+# iPv6 address
+ip_address="fd1d:fc98:b73e:b581::1"
+
+
+max_pings=3
+
+# interval
+interval=30
+
+
+while true
+do
+    # ping
+    for ((i = 1; i <= max_pings; i++))
+    do
+        ping_result=$(ping -c 1 $ip_address | grep "time=" | awk -F "time=" "{print $2}" | awk -F " " "{print $1}" | cut -d "." -f1)
+        if [ -n "$ping_result" ]; then
+            echo "Ping successful! Response time: $ping_result ms"
+        else
+            echo "Ping failed!"
+        fi
+    done
+
+    echo "Waiting for $interval seconds..."
+    sleep $interval
+done'
+
+echo "$script_content" | sudo tee /etc/ping_v6.sh > /dev/null
+
+    chmod +x /etc/ping_v6.sh
+# service file
+    cat <<EOF > /etc/systemd/system/ping_v6.service
+[Unit]
+Description=keepalive
+After=network.target
+
+[Service]
+ExecStart=/bin/bash /etc/ping_v6.sh
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF
+    
+    systemctl daemon-reload
+    systemctl enable ping_v6.service
+    systemctl start ping_v6.service
+    display_checkmark $'\e[92mPing Service has been added successfully!\e[0m'	
+	
+# display 
+echo ""
+echo -e "Created \e[93mPrivate IP Addresses \e[92m(Kharej):\e[0m"
+for ((i=1; i<=num_ips; i++))
+do
+    ip_suffix=`printf "%x\n" $i`
+    ip_addr="fd1d:fc98:b73e:b58${ip_suffix}::2"
+    echo "+---------------------------+"
+    echo -e "| \e[92m$ip_addr    \e[0m|"
+done
+echo "+---------------------------+"
+}
+
+#iran5
+function iran5_private_menu() {
+     clear
+	  echo $'\e[92m ^ ^\e[0m'
+      echo $'\e[92m(\e[91mO,O\e[92m)\e[0m'
+      echo $'\e[92m(   ) \e[93mConfiguring Iran server 5\e[0m'
+      echo $'\e[92m "-"\e[93m══════════════════════════\e[0m'
+      echo ""
+    display_notification $'\e[93mAdding private IP addresses for iran server 5...\e[0m'
+    if [ -f "/etc/private.sh" ]; then
+        rm /etc/private.sh
+    fi
+
+# Q&A
+printf "\e[93m╭─────────────────────────────────────────────────────────╮\e[0m\n"
+read -e -p $'\e[93mEnter \e[92mIran[5]\e[93m IPV4 address: \e[0m' local_ip
+read -e -p $'\e[93mEnter \e[92mKharej\e[93m IPV4 address [Kharej ipv4 address is the same for every iran server]: \e[0m' remote_ip
+
+
+# ip commands
+ip tunnel add azumi5 mode sit remote $remote_ip local $local_ip ttl 255 > /dev/null
+
+ip link set dev azumi5 up > /dev/null
+ 
+# iran initial IP address
+initial_ip="fd1d:fc98:b73e:b681::2/64"
+ip addr add $initial_ip dev azumi5 > /dev/null
+
+# additional private IPs-number
+read -e -p $'How many additional \e[92mprivate IPs\e[93m do you need? \e[0m' num_ips
+printf "\e[93m╰─────────────────────────────────────────────────────────╯\e[0m\n"
+# additional private IPs
+for ((i=1; i<=num_ips; i++))
+do
+  ip_suffix=`printf "%x\n" $i`
+  ip_addr="fd1d:fc98:b73e:b68${ip_suffix}::2/64"  > /dev/null
+  
+  # Check kharej
+  ip addr show dev azumi5 | grep -q "$ip_addr"
+  if [ $? -eq 0 ]; then
+    echo "IP address $ip_addr already exists. Skipping..."
+  else
+    ip addr add $ip_addr dev azumi5
+  fi
+done
+
+   # private.sh
+echo -e "\e[93mAdding commands to private.sh...\e[0m"
+echo "ip tunnel add azumi5 mode sit remote $remote_ip local $local_ip ttl 255" >> /etc/private.sh
+echo "ip link set dev azumi5 up" >> /etc/private.sh
+echo "ip addr add fd1d:fc98:b73e:b681::2/64 dev azumi5" >> /etc/private.sh
+ip_addr="fd1d:fc98:b73e:b68${ip_suffix}::2/64"
+echo "ip addr add $ip_addr dev azumi5" >> /etc/private.sh
+
+display_notification $'\e[93mAdding cron job for server 5...\e[0m'
+    (crontab -l 2>/dev/null; echo "@reboot /bin/bash /etc/private.sh") | crontab -
+	sleep 1
+	ping -c 2 fd1d:fc98:b73e:b681::1 | sed "s/.*/\x1b[94m&\x1b[0m/" 
+    # script
+script_content='#!/bin/bash
+
+# iPv6 address
+ip_address="fd1d:fc98:b73e:b681::1"
+
+
+max_pings=3
+
+# interval
+interval=35
+
+
+while true
+do
+    # ping
+    for ((i = 1; i <= max_pings; i++))
+    do
+        ping_result=$(ping -c 1 $ip_address | grep "time=" | awk -F "time=" "{print $2}" | awk -F " " "{print $1}" | cut -d "." -f1)
+        if [ -n "$ping_result" ]; then
+            echo "Ping successful! Response time: $ping_result ms"
+        else
+            echo "Ping failed!"
+        fi
+    done
+
+    echo "Waiting for $interval seconds..."
+    sleep $interval
+done'
+
+echo "$script_content" | sudo tee /etc/ping_v6.sh > /dev/null
+
+    chmod +x /etc/ping_v6.sh
+# service file
+    cat <<EOF > /etc/systemd/system/ping_v6.service
+[Unit]
+Description=keepalive
+After=network.target
+
+[Service]
+ExecStart=/bin/bash /etc/ping_v6.sh
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF
+    
+    systemctl daemon-reload
+    systemctl enable ping_v6.service
+    systemctl start ping_v6.service
+    display_checkmark $'\e[92mPing Service has been added successfully!\e[0m'	
+	
+# display 
+echo ""
+echo -e "Created \e[93mPrivate IP Addresses \e[92m(Kharej):\e[0m"
+for ((i=1; i<=num_ips; i++))
+do
+    ip_suffix=`printf "%x\n" $i`
+    ip_addr="fd1d:fc98:b73e:b68${ip_suffix}::2"
+    echo "+---------------------------+"
+    echo -e "| \e[92m$ip_addr    \e[0m|"
+done
+echo "+---------------------------+"
+}
+
 # private IP for kharej
 function kharejj_private_menu() {
     clear
@@ -1551,7 +2090,7 @@ echo $'\e[92m(   ) \e[93mConfiguring kharej server\e[0m'
 echo $'\e[92m "-"\e[93m══════════════════════════\e[0m'
 	  display_logoo
      echo -e "\e[93m.------------------------------------------------------------------------------------------------------------------------.\e[0m"
-     echo -e "\e[93m| \e[92mEnter the number of your iran servers [eg : 3].                                               \e[0m"
+     echo -e "\e[93m| \e[92mEnter the number of your iran servers [eg : 5].                                               \e[0m"
 	 echo -e "\e[93m|\e[93m You use the same kharej ipv4 address as you've entered on iran servers.                 \e[0m"
      echo -e "\e[93m|\e[0m If you used for example Arvan ipv4 as server 1. you should use Arvan ipv4 as server 1 on kharej server              \e[0m"
      echo -e "\e[93m|\e[92m You can have additional private IPs for each server if you want                              \e[0m"
@@ -1570,6 +2109,14 @@ fi
 
 if [ -f "/etc/private_3.sh" ]; then
     rm /etc/private_3.sh
+fi
+
+if [ -f "/etc/private_4.sh" ]; then
+    rm /etc/private_4.sh
+fi
+
+if [ -f "/etc/private_5.sh" ]; then
+    rm /etc/private_5.sh
 fi
 # buffer space
 echo "net.core.rmem_max = 16777216" >> /etc/sysctl.conf > /dev/null
@@ -1602,6 +2149,16 @@ do
         initial_ip="fd1d:fc98:b73e:b281::1/64"
         iran_ip="fd1d:fc98:b73e:b281::2/64"
 		i_ip="fd1d:fc98:b73e:b28"
+    elif [ $i -eq 4 ]; then
+        device_name="azumi4"
+        initial_ip="fd1d:fc98:b73e:b581::1/64"
+        kharej_ip="fd1d:fc98:b73e:b581::2/64"
+		i_ip="fd1d:fc98:b73e:b58"
+    elif [ $i -eq 5 ]; then
+        device_name="azumi5"
+        initial_ip="fd1d:fc98:b73e:b681::1/64"
+        kharej_ip="fd1d:fc98:b73e:b681::2/64"
+		i_ip="fd1d:fc98:b73e:b68"
     else
         echo "Invalid server number. Skipping..."
         continue
@@ -1657,7 +2214,7 @@ printf "\e[93m╰─────────────────────
 done
 
 # the number of servers
-num_servers=3
+num_servers=5
 
 # Function 
 create_ping_files() {
@@ -1679,13 +2236,25 @@ create_ping_files() {
         initial_ip="fd1d:fc98:b73e:b381::1/64"
         iran_ip="fd1d:fc98:b73e:b381::2"
         i_ip="fd1d:fc98:b73e:b38"
-		ping=50
+		ping=45
     elif [ $server_number -eq 3 ]; then
         device_name="azumi3"
         initial_ip="fd1d:fc98:b73e:b281::1/64"
         iran_ip="fd1d:fc98:b73e:b281::2"
         i_ip="fd1d:fc98:b73e:b28"
-		ping=60
+		ping=50
+    elif [ $server_number -eq 4 ]; then
+        device_name="azumi4"
+        initial_ip="fd1d:fc98:b73e:b581::1/64"
+        kharej_ip="fd1d:fc98:b73e:b581::2"
+        i_ip="fd1d:fc98:b73e:b58"
+		ping=33
+     elif [ $server_number -eq 5 ]; then
+        device_name="azumi5"
+        initial_ip="fd1d:fc98:b73e:b681::1/64"
+        kharej_ip="fd1d:fc98:b73e:b681::2"
+        i_ip="fd1d:fc98:b73e:b68"
+		ping=36
     else
         echo "Invalid server number. Skipping..."
         return
@@ -1758,10 +2327,10 @@ WantedBy=multi-user.target"
 # server numbers
      echo -e "\e[93m.---------------------------------------------------------------------------------------------------------.\e[0m"
      echo -e "\e[93m| \e[92mIf you have 2 servers , you should enter like this >> 1 2    - With a space between  every number                                           \e[0m"
-	  echo -e "\e[0m|\e[0m If you have 3 servers, you should enter it like this >> 1 2 3  - With a space between every number                \e[0m"
+	  echo -e "\e[0m|\e[0m If you have 5 servers, you should enter it like this >> 1 2 3 4 5  - With a space between every number                \e[0m"
      echo -e "\e[93m'---------------------------------------------------------------------------------------------------------'\e[0m"
 	 echo ""
-read -e -p $'\e[93mEnter the \e[92mserver numbers \e[93m(Choose the server numbers, separated by a space - e.g., 1 2 3): \e[0m' server_numbers
+read -e -p $'\e[93mEnter the \e[92mserver numbers \e[93m(Choose the server numbers, separated by a space - e.g., 1 2 3 4 5): \e[0m' server_numbers
 
 # array of server numbers
 IFS=' ' read -ra server_array <<< "$server_numbers"
@@ -2334,8 +2903,8 @@ function uninstall() {
 	printf "\e[93m╭───────────────────────────────────────╮\e[0m\n"
   echo $'\e[93mSelect what to uninstall:\e[0m'
   echo $'1. \e[0mPrivate IP - [Single Server]\e[0m'
-  echo $'2. \e[92mPrivate IP - [3]Kharej [1]Iran\e[0m'
-  echo $'3. \e[93mPrivate IP - [1]Kharej [3]Iran\e[0m'
+  echo $'2. \e[92mPrivate IP - [5]Kharej [1]Iran\e[0m'
+  echo $'3. \e[93mPrivate IP - [1]Kharej [5]Iran\e[0m'
   echo $'4. \e[91m6to4\e[0m'
   echo $'5. \e[92m6to4 [Anycast]\e[0m'
   echo $'6. \e[94mback to main menu\e[0m'
@@ -2408,7 +2977,7 @@ function pri_uninstall_menu() {
     clear
     echo $'\e[92m ^ ^\e[0m'
     echo $'\e[92m(\e[91mO,O\e[92m)\e[0m'
-    echo $'\e[92m(   ) \e[93mUninstall Menu \e[92m[3]\e[93mkharej \e[92m[1]\e[93miran\e[0m'
+    echo $'\e[92m(   ) \e[93mUninstall Menu \e[92m[5]\e[93mkharej \e[92m[1]\e[93miran\e[0m'
     echo $'\e[92m "-"\e[93m═══════════════════════════════════\e[0m'
 	echo ""
 	printf "\e[93m╭───────────────────────────────────────╮\e[0m\n"
@@ -2441,27 +3010,39 @@ function pri_iran_menu() {
 	rm /etc/private_1.sh >/dev/null 2>&1
 	rm /etc/private_2.sh >/dev/null 2>&1
 	rm /etc/private_3.sh >/dev/null 2>&1
+        rm /etc/private_4.sh >/dev/null 2>&1
+	rm /etc/private_5.sh >/dev/null 2>&1
 	sleep 1
 	rm /etc/ping_1.sh >/dev/null 2>&1
 	rm /etc/ping_2.sh >/dev/null 2>&1
 	rm /etc/ping_3.sh >/dev/null 2>&1
+        rm /etc/ping_4.sh >/dev/null 2>&1
+        rm /etc/ping_5.sh >/dev/null 2>&1
 	
 	display_notification $'\e[93mRemoving cron job..\e[0m'
 	crontab -l | grep -v "@reboot /bin/bash /etc/private_1.sh" | crontab -
 	crontab -l | grep -v "@reboot /bin/bash /etc/private_2.sh" | crontab -
 	crontab -l | grep -v "@reboot /bin/bash /etc/private_3.sh" | crontab -
+        crontab -l | grep -v "@reboot /bin/bash /etc/private_4.sh" | crontab -
+        crontab -l | grep -v "@reboot /bin/bash /etc/private_5.sh" | crontab -
 	sleep 1
 	
 	systemctl disable ping_1.service >/dev/null 2>&1
 	systemctl disable ping_2.service >/dev/null 2>&1
 	systemctl disable ping_3.service >/dev/null 2>&1
+        systemctl disable ping_4.service >/dev/null 2>&1
+        systemctl disable ping_5.service >/dev/null 2>&1
 	systemctl stop ping_1.service >/dev/null 2>&1
 	systemctl stop ping_2.service >/dev/null 2>&1
 	systemctl stop ping_3.service >/dev/null 2>&1
+ 	systemctl stop ping_4.service >/dev/null 2>&1
+  	systemctl stop ping_5.service >/dev/null 2>&1
 	
 	rm /etc/systemd/system/ping_1.service >/dev/null 2>&1
 	rm /etc/systemd/system/ping_2.service >/dev/null 2>&1
 	rm /etc/systemd/system/ping_3.service >/dev/null 2>&1
+ 	rm /etc/systemd/system/ping_4.service >/dev/null 2>&1
+  	rm /etc/systemd/system/ping_5.service >/dev/null 2>&1
 	sleep 1
 
 	systemctl daemon-reload
@@ -2472,6 +3053,10 @@ function pri_iran_menu() {
 	ip tunnel del azumi2 >/dev/null 2>&1
 	ip link set dev azumi3 down >/dev/null 2>&1
 	ip tunnel del azumi3 >/dev/null 2>&1
+ 	ip link set dev azumi4 down >/dev/null 2>&1
+	ip tunnel del azumi4 >/dev/null 2>&1
+ 	ip link set dev azumi5 down >/dev/null 2>&1
+	ip tunnel del azumi5 >/dev/null 2>&1
 
 	echo -n "Progress: "
 
@@ -2517,6 +3102,10 @@ crontab -l | grep -v "@reboot /bin/bash /etc/private.sh" | crontab -
     ip tunnel del azumi2 > /dev/null
 	ip link set dev azumi3 down > /dev/null
     ip tunnel del azumi3 > /dev/null
+    	ip link set dev azumi4 down > /dev/null
+    ip tunnel del azumi4 > /dev/null
+    	ip link set dev azumi5 down > /dev/null
+    ip tunnel del azumi5 > /dev/null
 
 	echo -n "Progress: "
 
@@ -2541,7 +3130,7 @@ function prii_uninstall_menu() {
     clear
     echo $'\e[92m ^ ^\e[0m'
     echo $'\e[92m(\e[91mO,O\e[92m)\e[0m'
-    echo $'\e[92m(   ) \e[93mUninstall Menu \e[92m[1]\e[93mkharej \e[92m[3]\e[93miran\e[0m'
+    echo $'\e[92m(   ) \e[93mUninstall Menu \e[92m[1]\e[93mkharej \e[92m[5]\e[93miran\e[0m'
     echo $'\e[92m "-"\e[93m════════════════════════════════════\e[0m'
 	echo ""
 	printf "\e[93m╭───────────────────────────────────────╮\e[0m\n"
@@ -2574,27 +3163,39 @@ function priii_kharej_menu() {
 	rm /etc/private_1.sh >/dev/null 2>&1
 	rm /etc/private_2.sh >/dev/null 2>&1
 	rm /etc/private_3.sh >/dev/null 2>&1
+ 	rm /etc/private_4.sh >/dev/null 2>&1
+  	rm /etc/private_5.sh >/dev/null 2>&1
 	sleep 1
 	rm /etc/ping_1.sh >/dev/null 2>&1
 	rm /etc/ping_2.sh >/dev/null 2>&1
 	rm /etc/ping_3.sh >/dev/null 2>&1
+ 	rm /etc/ping_4.sh >/dev/null 2>&1
+  	rm /etc/ping_5.sh >/dev/null 2>&1
 	
 	display_notification $'\e[93mRemoving cron job..\e[0m'
 	crontab -l | grep -v "@reboot /bin/bash /etc/private_1.sh" | crontab -
 	crontab -l | grep -v "@reboot /bin/bash /etc/private_2.sh" | crontab -
 	crontab -l | grep -v "@reboot /bin/bash /etc/private_3.sh" | crontab -
+ 	crontab -l | grep -v "@reboot /bin/bash /etc/private_4.sh" | crontab -
+  	crontab -l | grep -v "@reboot /bin/bash /etc/private_5.sh" | crontab -
 	sleep 1
 	
 	systemctl disable ping_1.service >/dev/null 2>&1
 	systemctl disable ping_2.service >/dev/null 2>&1
 	systemctl disable ping_3.service >/dev/null 2>&1
+ 	systemctl disable ping_4.service >/dev/null 2>&1
+  	systemctl disable ping_5.service >/dev/null 2>&1
 	systemctl stop ping_1.service >/dev/null 2>&1
 	systemctl stop ping_2.service >/dev/null 2>&1
 	systemctl stop ping_3.service >/dev/null 2>&1
+ 	systemctl stop ping_4.service >/dev/null 2>&1
+  	systemctl stop ping_5.service >/dev/null 2>&1
 	
 	rm /etc/systemd/system/ping_1.service >/dev/null 2>&1
 	rm /etc/systemd/system/ping_2.service >/dev/null 2>&1
 	rm /etc/systemd/system/ping_3.service >/dev/null 2>&1
+ 	rm /etc/systemd/system/ping_4.service >/dev/null 2>&1
+  	rm /etc/systemd/system/ping_5.service >/dev/null 2>&1
 	sleep 1
 
 	systemctl daemon-reload
@@ -2605,6 +3206,10 @@ function priii_kharej_menu() {
 	ip tunnel del azumi2 >/dev/null 2>&1
 	ip link set dev azumi3 down >/dev/null 2>&1
 	ip tunnel del azumi3 >/dev/null 2>&1
+ 	ip link set dev azumi4 down >/dev/null 2>&1
+	ip tunnel del azumi4 >/dev/null 2>&1
+ 	ip link set dev azumi5 down >/dev/null 2>&1
+	ip tunnel del azumi5 >/dev/null 2>&1
 
 	echo -n "Progress: "
 
@@ -2637,6 +3242,8 @@ display_notification $'\e[93mRemoving cron job..\e[0m'
 crontab -l | grep -v "@reboot /bin/bash /etc/private.sh" | crontab -
 crontab -l | grep -v "@reboot /bin/bash /etc/private_2.sh" | crontab -
 crontab -l | grep -v "@reboot /bin/bash /etc/private_3.sh" | crontab - 
+crontab -l | grep -v "@reboot /bin/bash /etc/private_4.sh" | crontab - 
+crontab -l | grep -v "@reboot /bin/bash /etc/private_5.sh" | crontab - 
     sleep 1
     systemctl disable ping_v6.service > /dev/null 2>&1
     systemctl stop ping_v6.service > /dev/null 2>&1
@@ -2651,6 +3258,10 @@ crontab -l | grep -v "@reboot /bin/bash /etc/private_3.sh" | crontab -
     ip tunnel del azumi2 > /dev/null
 	ip link set dev azumi3 down > /dev/null
     ip tunnel del azumi3 > /dev/null
+    	ip link set dev azumi4 down > /dev/null
+    ip tunnel del azumi4 > /dev/null
+    	ip link set dev azumi5 down > /dev/null
+    ip tunnel del azumi5 > /dev/null
 
 	echo -n "Progress: "
 
