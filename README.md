@@ -37,7 +37,25 @@
   ![6348248](https://github.com/Azumi67/PrivateIP-Tunnel/assets/119934376/398f8b07-65be-472e-9821-631f7b70f783)
 **آموزش**
 
- 
+------------------------
+![green-dot-clipart-3](https://github.com/Azumi67/6TO4-PrivateIP_multipleSERVERS/assets/119934376/dd030326-0687-412d-bd38-092e7492ddef)
+**ساخت پرایوت ایپی بین یک سرور خارج و ایران**
+
+  <p align="right">
+  <img src="https://github.com/Azumi67/PrivateIP-Tunnel/assets/119934376/d92b4e8f-b368-4938-b639-5efea493e184" alt="Image" />
+</p>
+
+
+
+<div dir="rtl">&bull; ساخت پرایوت ایپی : از سرور خارج شروع کنید.</div>
+ <div dir="rtl">&bull; ایپی 4 خارج و ایران را وارد نمایید</div> 
+  <div dir="rtl">&bull; ساب نت 64 را وارد نمایید</div>
+   <div dir="rtl">&bull; تعداد ایپی پرایوتی که نیاز دارید را وارد نمایید</div>
+    <div dir="rtl">&bull; ایپی های ساخته شده را در notepad برای استفاده در تانل بنویسید</div>
+     <div dir="rtl">&bull; به صورت اتوماتیک ایپی پرایوت وسرویس پینگ به منظور جلوگیری از اختلال برای شما ساخته خواهد شد</div>
+      <div dir="rtl">&bull; سپس همین مراحل را برای سرور ایران هم انجام بدهید</div>
+
+--------------------------------------
 
 **3 سرور ایران و 1 سرور خارج**
 
